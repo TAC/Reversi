@@ -1,4 +1,4 @@
-package jp.x28go.reversi
+package jp.x28go.game.reversi
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle

@@ -1,0 +1,68 @@
+def VERSION_CODE = 1
+def VERSION_NAME = "0.0.1"
+def PACKAGE_NAME = "jp.x28go.game.reversi"
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 26
+
+    sourceSets {
+        instrumentTest.setRoot('tests')
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        applicationId PACKAGE_NAME
+        minSdkVersion 14
+        targetSdkVersion 25
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        debug {
+            debuggable true
+            applicationIdSuffix ".debug"
+            versionNameSuffix '-debug'
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions "default"
+    productFlavors {
+        develop {
+            versionName VERSION_NAME + "-develop"
+        }
+        staging {
+            versionName VERSION_NAME + "-staging"
+        }
+        product {
+            versionName VERSION_NAME + "-product"
+        }
+    }
+
+    applicationVariants.all { variant ->
+        def prefix = appName + "-android"
+        if (variant.buildType.name.equals("debug") || variant.buildType.name.equals("release")) {
+            variant.outputs.all {
+                outputFileName = "${prefix}_v${versionName}_r${versionCode}.apk"
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
