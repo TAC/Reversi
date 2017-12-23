@@ -5,6 +5,7 @@ def PACKAGE_NAME = "jp.x28go.game.reversi"
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'deploygate'
 
 android {
     compileSdkVersion 26
@@ -20,7 +21,6 @@ android {
         minSdkVersion 14
         targetSdkVersion 25
         versionCode VERSION_CODE
-        versionName VERSION_NAME
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -49,10 +49,9 @@ android {
     }
 
     applicationVariants.all { variant ->
-        def prefix = appName + "-android"
         if (variant.buildType.name.equals("debug") || variant.buildType.name.equals("release")) {
             variant.outputs.all {
-                outputFileName = "${prefix}_v${versionName}_r${versionCode}.apk"
+                outputFileName = "${appName}-android_v${versionName}_r${versionCode}.apk"
             }
         }
     }
@@ -66,4 +65,35 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
+
+deploygate {
+    def keysProperties = project.file("../../keys.properties")
+    if (keysProperties.exists()) {
+        Properties properties = new Properties()
+        keysProperties.withInputStream { instr ->
+            properties.load(instr)
+        }
+        def deploygateUser = properties.getProperty('deploygate.user')
+        if (deploygateUser) {
+            userName = deploygateUser
+        } else {
+            userName = System.getenv("DEPLOYGATE_USER")
+        }
+        def deploygateToken = properties.getProperty('deploygate.token')
+        if (deploygateToken) {
+            token = deploygateToken
+        } else {
+            token = System.getenv("DEPLOYGATE_TOKEN")
+        }
+    } else {
+        userName = System.getenv("DEPLOYGATE_USER")
+        token = System.getenv("DEPLOYGATE_TOKEN")
+    }
+
+    apks {
+        debug {
+            sourceFile = file("${project.buildDir}/outputs/apk/develop/debug/${appName}-android_v${VERSION_NAME}-develop-debug_r${VERSION_CODE}.apk")
+        }
+    }
 }

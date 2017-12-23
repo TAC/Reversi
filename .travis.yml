@@ -16,3 +16,4 @@ android:
     - 'google-gdk-license-.+'
 script:
   - ./gradlew assembleDevelopDebug
+  - ./gradlew uploadDeployGateDevelopDebug
